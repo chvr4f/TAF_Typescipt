@@ -1,4 +1,4 @@
-export type House = "Gryffondor" | "Serpentard" | "Poufsouffle" | "Serdaigle";
+export type House = "Gryffindor" | "Slytherin" | "Ravenclaw" | "Hufflepuff";
 
 export interface Wizard {
   id: number;

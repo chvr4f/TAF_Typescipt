@@ -13,4 +13,8 @@ export class WizardRepository {
   findAll(): Wizard[] {
     return [...this.wizards];
   }
+
+  findByHouse(house: Wizard["house"]): Wizard[] {
+    return this.wizards.filter((wizard) => wizard.house === house);
+  }
 }
