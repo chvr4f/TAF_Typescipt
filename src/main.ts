@@ -5,8 +5,8 @@ import type { AcademyEvent, House, SpellCastEvent, Wizard } from "./types.ts";
 const repo = new WizardRepository();
 
 // Exercice 1 — l'appelant ne fournit pas d'identifiant
-const harry = repo.add({ name: "Harry Potter", house: "Gryffindor", patronus: "Cerf" });
-const draco = repo.add({ name: "Drago Malefoy", house: "Slytherin" });
+const harry = repo.add({ name: "Harry Potter", house: "Gryffindor", level: 5, active: true });
+const draco = repo.add({ name: "Drago Malefoy", house: "Slytherin", level: 4, active: true });
 
 console.log("Sorcier ajouté :", harry);
 console.log("Sorcier ajouté :", draco);
@@ -20,12 +20,12 @@ console.assert(repo.findAll().length === 2, "Le référentiel devrait contenir 2
 // Fournir un id est refusé à la compilation (vérifié par `npm run typecheck`)
 function appelInvalide() {
   // @ts-expect-error — 'id' n'existe pas dans NewWizard
-  repo.add({ id: 42, name: "Hermione Granger", house: "Gryffindor" });
+  repo.add({ id: 42, name: "Hermione Granger", house: "Gryffindor", level: 6, active: true });
 }
 
 // Exercice 2 — filtrer les sorciers par maison
-const hermione = repo.add({ name: "Hermione Granger", house: "Gryffindor", patronus: "Loutre" });
-repo.add({ name: "Luna Lovegood", house: "Ravenclaw", patronus: "Lièvre" });
+const hermione = repo.add({ name: "Hermione Granger", house: "Gryffindor", level: 6, active: true });
+repo.add({ name: "Luna Lovegood", house: "Ravenclaw", level: 4, active: true });
 
 const gryffindors = repo.findByHouse("Gryffindor");
 console.log("Gryffindor :", gryffindors.map((w) => w.name));
@@ -135,12 +135,15 @@ function isWizard(value: unknown): value is Wizard {
   if (typeof value !== "object" || value === null) {
     return false;
   }
+
   const candidate = value as Record<string, unknown>;
+
   return (
     typeof candidate.id === "number" &&
     typeof candidate.name === "string" &&
     isHouse(candidate.house) &&
-    (candidate.patronus === undefined || typeof candidate.patronus === "string")
+    typeof candidate.level === "number" &&
+    typeof candidate.active === "boolean"
   );
 }
 
@@ -150,9 +153,9 @@ console.assert(!isHouse(42), "Un nombre ne devrait pas être une maison");
 
 // Données non typées, par exemple reçues d'une API
 const donnees: unknown[] = [
-  { id: 10, name: "Cedric Diggory", house: "Hufflepuff" },
-  { id: 11, name: "Viktor Krum", house: "Durmstrang" },
-  { id: 12, name: "Neville Londubat" },
+  { id: 10, name: "Cedric Diggory", house: "Hufflepuff", level: 6, active: true },
+  { id: 11, name: "Viktor Krum", house: "Durmstrang", level: 7, active: true },
+  { id: 12, name: "Neville Londubat", level: 3, active: true },
 ];
 
 const sorciersValides = donnees.filter(isWizard);

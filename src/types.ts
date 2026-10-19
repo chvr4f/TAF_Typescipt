@@ -4,7 +4,8 @@ export interface Wizard {
   id: number;
   name: string;
   house: House;
-  patronus?: string;
+  level: number;
+  active: boolean;
 }
 
 // Données fournies par l'appelant : tout sauf l'identifiant,
