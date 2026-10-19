@@ -11,6 +11,14 @@ export interface Wizard {
 // qui est attribué par le référentiel.
 export type NewWizard = Omit<Wizard, "id">;
 
+export interface Spell {
+  id: number;
+  name: string;
+  power: number;
+}
+
+export type NewSpell = Omit<Spell, "id">;
+
 // Union discriminée : la propriété `type` indique de quel événement il s'agit.
 export type AcademyEvent =
   | { type: "enrollment"; wizardId: number; house: House }

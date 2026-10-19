@@ -1,4 +1,5 @@
-import type { NewWizard, Wizard } from "./types.ts";
+import { ValidateSpellPower } from "./decorators.ts";
+import type { NewSpell, NewWizard, Spell, Wizard } from "./types.ts";
 
 export class WizardRepository {
   private wizards: Wizard[] = [];
@@ -16,5 +17,21 @@ export class WizardRepository {
 
   findByHouse(house: Wizard["house"]): Wizard[] {
     return this.wizards.filter((wizard) => wizard.house === house);
+  }
+}
+
+export class SpellRepository {
+  private spells: Spell[] = [];
+  private nextId = 1;
+
+  @ValidateSpellPower
+  add(data: NewSpell): Spell {
+    const spell: Spell = { ...data, id: this.nextId++ };
+    this.spells.push(spell);
+    return spell;
+  }
+
+  findAll(): Spell[] {
+    return [...this.spells];
   }
 }
