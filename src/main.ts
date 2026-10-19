@@ -101,25 +101,25 @@ console.assert(erreur instanceof RangeError, "Un sort de puissance négative dev
 console.assert(spellRepo.findAll().length === 2, "Le sort refusé ne devrait pas être enregistré");
 
 // Exercice 5 — mise en cache des résultats, séparément pour chaque instance
-class DamageCalculator {
+class SpellService {
   calls = 0;
 
   @Memoize
-  damage(power: number, level: number): number {
+  calculateDamage(power: number, level: number): number {
     this.calls++;
     return power * level;
   }
 }
 
-const calc = new DamageCalculator();
-const d1 = calc.damage(10, 3);
-const d2 = calc.damage(10, 3); // mêmes arguments : lu depuis le cache
-const d3 = calc.damage(5, 2);
-console.log("Dégâts :", d1, d2, d3, "— calculs effectués :", calc.calls);
+const service = new SpellService();
+const d1 = service.calculateDamage(10, 3);
+const d2 = service.calculateDamage(10, 3); // mêmes arguments : lu depuis le cache
+const d3 = service.calculateDamage(5, 2);
+console.log("Dégâts :", d1, d2, d3, "— calculs effectués :", service.calls);
 
 console.assert(d1 === 30 && d2 === 30 && d3 === 10, "Les résultats devraient être corrects");
-console.assert(calc.calls === 2, "Le deuxième appel avec (10, 3) devrait venir du cache");
+console.assert(service.calls === 2, "Le deuxième appel avec (10, 3) devrait venir du cache");
 
-const autreCalc = new DamageCalculator();
-autreCalc.damage(10, 3);
-console.assert(autreCalc.calls === 1, "Chaque instance devrait avoir son propre cache");
+const autreService = new SpellService();
+autreService.calculateDamage(10, 3);
+console.assert(autreService.calls === 1, "Chaque instance devrait avoir son propre cache");
