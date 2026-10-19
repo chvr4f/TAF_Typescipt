@@ -1,4 +1,4 @@
-import type { Spell } from "./types.ts";
+import type { Spell } from "./types";
 
 // Décorateur de méthode : refuse l'appel si le sort passé en premier
 // argument a une puissance négative.
@@ -22,7 +22,7 @@ export function ValidateSpellPower(
 
 // Décorateur de méthode (synchrone) : mémorise le résultat pour chaque
 // combinaison d'arguments, avec un cache séparé pour chaque instance.
-export function Memoize(
+export function Cache(
   _target: object,
   _propertyKey: string,
   descriptor: PropertyDescriptor,

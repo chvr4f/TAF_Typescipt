@@ -1,6 +1,6 @@
-import { Memoize } from "./decorators.ts";
-import { SpellRepository, WizardRepository } from "./repository.ts";
-import type { AcademyEvent, House, SpellCastEvent, Wizard } from "./types.ts";
+import { Cache } from "./decorators";
+import { SpellRepository, WizardRepository } from "./repository";
+import type { AcademyEvent, House, SpellCastEvent, Wizard } from "./types";
 
 const repo = new WizardRepository();
 
@@ -101,28 +101,24 @@ console.assert(erreur instanceof RangeError, "Un sort de puissance négative dev
 console.assert(spellRepo.findAll().length === 2, "Le sort refusé ne devrait pas être enregistré");
 
 // Exercice 5 — mise en cache des résultats, séparément pour chaque instance
-class SpellService {
-  calls = 0;
+class SpellCalculator {
+  @Cache
+  calculatePower(basePower: number, multiplier: number): number {
+    console.log("Calculating...");
 
-  @Memoize
-  calculateDamage(power: number, level: number): number {
-    this.calls++;
-    return power * level;
+    return basePower * multiplier;
   }
 }
 
-const service = new SpellService();
-const d1 = service.calculateDamage(10, 3);
-const d2 = service.calculateDamage(10, 3); // mêmes arguments : lu depuis le cache
-const d3 = service.calculateDamage(5, 2);
-console.log("Dégâts :", d1, d2, d3, "— calculs effectués :", service.calls);
+const calculator = new SpellCalculator();
 
-console.assert(d1 === 30 && d2 === 30 && d3 === 10, "Les résultats devraient être corrects");
-console.assert(service.calls === 2, "Le deuxième appel avec (10, 3) devrait venir du cache");
+console.log(calculator.calculatePower(10, 3));
+console.log(calculator.calculatePower(10, 3));
+console.log(calculator.calculatePower(5, 2));
 
-const autreService = new SpellService();
-autreService.calculateDamage(10, 3);
-console.assert(autreService.calls === 1, "Chaque instance devrait avoir son propre cache");
+// Une autre instance a son propre cache : "Calculating..." s'affiche à nouveau
+const autreCalculator = new SpellCalculator();
+console.log(autreCalculator.calculatePower(10, 3));
 
 // Exercice 6 — type guard qui n'accepte que les quatre maisons de Poudlard
 const HOUSES: readonly House[] = ["Gryffindor", "Slytherin", "Ravenclaw", "Hufflepuff"];

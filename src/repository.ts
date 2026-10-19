@@ -1,5 +1,5 @@
-import { ValidateSpellPower } from "./decorators.ts";
-import type { NewSpell, NewWizard, Spell, Wizard } from "./types.ts";
+import { ValidateSpellPower } from "./decorators";
+import type { NewSpell, NewWizard, Spell, Wizard } from "./types";
 
 export class WizardRepository {
   private wizards: Wizard[] = [];
