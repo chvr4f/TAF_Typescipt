@@ -18,8 +18,6 @@ export interface Spell {
   power: number;
 }
 
-export type NewSpell = Omit<Spell, "id">;
-
 // Union discriminée : la propriété `type` indique de quel événement il s'agit.
 export type AcademyEvent =
   | { type: "enrollment"; wizardId: number; house: House }

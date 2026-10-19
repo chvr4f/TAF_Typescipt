@@ -84,21 +84,20 @@ function evenementsInvalides() {
 
 // Exercice 4 — un sort de puissance négative est refusé par le décorateur
 const spellRepo = new SpellRepository();
-const lumos = spellRepo.add({ name: "Lumos", power: 10 });
-const nox = spellRepo.add({ name: "Nox", power: 0 });
+spellRepo.add({ id: 1, name: "Lumos", power: 10 });
+spellRepo.add({ id: 2, name: "Nox", power: 0 });
 console.log("Sorts ajoutés :", spellRepo.findAll());
 
 let erreur: unknown;
 try {
-  spellRepo.add({ name: "Sort raté", power: -5 });
+  spellRepo.add({ id: 3, name: "Sort raté", power: -5 });
 } catch (e) {
   erreur = e;
   console.log((e as Error).message);
 }
 
-console.assert(lumos.id === 1 && nox.id === 2, "Les sorts valides devraient être enregistrés");
 console.assert(erreur instanceof RangeError, "Un sort de puissance négative devrait lever une erreur");
-console.assert(spellRepo.findAll().length === 2, "Le sort refusé ne devrait pas être enregistré");
+console.assert(spellRepo.findAll().length === 2, "Seuls Lumos et Nox devraient être enregistrés");
 
 // Exercice 5 — mise en cache des résultats, séparément pour chaque instance
 class SpellCalculator {

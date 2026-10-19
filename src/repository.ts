@@ -1,37 +1,36 @@
 import { ValidateSpellPower } from "./decorators";
-import type { NewSpell, NewWizard, Spell, Wizard } from "./types";
+import type { NewWizard, Spell, Wizard } from "./types";
 
-export class WizardRepository {
-  private wizards: Wizard[] = [];
-  private nextId = 1;
+export class Repository<T> {
+  protected items: T[] = [];
 
-  add(data: NewWizard): Wizard {
-    const wizard: Wizard = { ...data, id: this.nextId++ };
-    this.wizards.push(wizard);
-    return wizard;
+  add(item: T): void {
+    this.items.push(item);
   }
 
-  findAll(): Wizard[] {
-    return [...this.wizards];
-  }
-
-  findByHouse(house: Wizard["house"]): Wizard[] {
-    return this.wizards.filter((wizard) => wizard.house === house);
+  findAll(): T[] {
+    return [...this.items];
   }
 }
 
-export class SpellRepository {
-  private spells: Spell[] = [];
+export class WizardRepository extends Repository<Wizard> {
   private nextId = 1;
 
-  @ValidateSpellPower
-  add(data: NewSpell): Spell {
-    const spell: Spell = { ...data, id: this.nextId++ };
-    this.spells.push(spell);
-    return spell;
+  // L'appelant fournit un NewWizard (sans id) : le référentiel attribue l'identifiant.
+  override add(data: NewWizard): Wizard {
+    const wizard: Wizard = { ...data, id: this.nextId++ };
+    super.add(wizard);
+    return wizard;
   }
 
-  findAll(): Spell[] {
-    return [...this.spells];
+  findByHouse(house: Wizard["house"]): Wizard[] {
+    return this.items.filter((wizard) => wizard.house === house);
+  }
+}
+
+export class SpellRepository extends Repository<Spell> {
+  @ValidateSpellPower
+  override add(spell: Spell): void {
+    super.add(spell);
   }
 }
