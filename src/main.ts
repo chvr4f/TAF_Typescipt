@@ -1,6 +1,6 @@
 import { Memoize } from "./decorators.ts";
 import { SpellRepository, WizardRepository } from "./repository.ts";
-import type { AcademyEvent, SpellCastEvent } from "./types.ts";
+import type { AcademyEvent, House, SpellCastEvent, Wizard } from "./types.ts";
 
 const repo = new WizardRepository();
 
@@ -123,3 +123,40 @@ console.assert(service.calls === 2, "Le deuxième appel avec (10, 3) devrait ven
 const autreService = new SpellService();
 autreService.calculateDamage(10, 3);
 console.assert(autreService.calls === 1, "Chaque instance devrait avoir son propre cache");
+
+// Exercice 6 — type guard qui n'accepte que les quatre maisons de Poudlard
+const HOUSES: readonly House[] = ["Gryffindor", "Slytherin", "Ravenclaw", "Hufflepuff"];
+
+function isHouse(value: unknown): value is House {
+  return HOUSES.some((house) => house === value);
+}
+
+function isWizard(value: unknown): value is Wizard {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+  const candidate = value as Record<string, unknown>;
+  return (
+    typeof candidate.id === "number" &&
+    typeof candidate.name === "string" &&
+    isHouse(candidate.house) &&
+    (candidate.patronus === undefined || typeof candidate.patronus === "string")
+  );
+}
+
+console.assert(isHouse("Gryffindor"), "Gryffindor devrait être une maison valide");
+console.assert(!isHouse("Durmstrang"), "Durmstrang ne devrait pas être une maison de Poudlard");
+console.assert(!isHouse(42), "Un nombre ne devrait pas être une maison");
+
+// Données non typées, par exemple reçues d'une API
+const donnees: unknown[] = [
+  { id: 10, name: "Cedric Diggory", house: "Hufflepuff" },
+  { id: 11, name: "Viktor Krum", house: "Durmstrang" },
+  { id: 12, name: "Neville Londubat" },
+];
+
+const sorciersValides = donnees.filter(isWizard);
+console.log("Sorciers valides :", sorciersValides.map((w) => w.name));
+
+console.assert(sorciersValides.length === 1, "Seul Cedric devrait être un sorcier valide");
+console.assert(sorciersValides[0].name === "Cedric Diggory", "Le sorcier valide devrait être Cedric");
