@@ -1,6 +1,5 @@
-import { handleSpellCast } from "./events.ts";
 import { WizardRepository } from "./repository.ts";
-import type { AcademyEvent } from "./types.ts";
+import type { AcademyEvent, SpellCastEvent } from "./types.ts";
 
 const repo = new WizardRepository();
 
@@ -47,6 +46,11 @@ function maisonInvalide() {
 }
 
 // Exercice 3 — gestionnaire limité aux lancements de sorts
+// N'accepte que les événements de lancement de sorts.
+function handleSpellCast(event: SpellCastEvent): string {
+  return `Le sorcier #${event.wizardId} lance « ${event.spell} »`;
+}
+
 const events: AcademyEvent[] = [
   { type: "enrollment", wizardId: hermione.id, house: "Gryffindor" },
   { type: "spell-cast", wizardId: harry.id, spell: "Expelliarmus" },
