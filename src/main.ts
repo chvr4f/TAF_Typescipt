@@ -151,15 +151,24 @@ console.assert(isHouse("Gryffindor"), "Gryffindor devrait être une maison valid
 console.assert(!isHouse("Durmstrang"), "Durmstrang ne devrait pas être une maison de Poudlard");
 console.assert(!isHouse(42), "Un nombre ne devrait pas être une maison");
 
-// Données non typées, par exemple reçues d'une API
-const donnees: unknown[] = [
-  { id: 10, name: "Cedric Diggory", house: "Hufflepuff", level: 6, active: true },
-  { id: 11, name: "Viktor Krum", house: "Durmstrang", level: 7, active: true },
-  { id: 12, name: "Neville Londubat", level: 3, active: true },
-];
+const validData: unknown = {
+  id: 1,
+  name: "Harry Potter",
+  house: "Gryffindor",
+  level: 5,
+  active: true
+};
 
-const sorciersValides = donnees.filter(isWizard);
-console.log("Sorciers valides :", sorciersValides.map((w) => w.name));
+const invalidData: unknown = {
+  id: 2,
+  name: "Viktor",
+  house: "Durmstrang",
+  level: 5,
+  active: true
+};
 
-console.assert(sorciersValides.length === 1, "Seul Cedric devrait être un sorcier valide");
-console.assert(sorciersValides[0].name === "Cedric Diggory", "Le sorcier valide devrait être Cedric");
+console.log(isWizard(validData));   // true
+console.log(isWizard(invalidData)); // false
+
+console.assert(isWizard(validData), "Harry (Gryffindor) devrait être un sorcier valide");
+console.assert(!isWizard(invalidData), "Viktor (Durmstrang) devrait être refusé");
