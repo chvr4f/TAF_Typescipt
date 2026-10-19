@@ -1,4 +1,6 @@
+import { handleSpellCast } from "./events.ts";
 import { WizardRepository } from "./repository.ts";
+import type { AcademyEvent } from "./types.ts";
 
 const repo = new WizardRepository();
 
@@ -22,7 +24,7 @@ function appelInvalide() {
 }
 
 // Exercice 2 — filtrer les sorciers par maison
-repo.add({ name: "Hermione Granger", house: "Gryffindor", patronus: "Loutre" });
+const hermione = repo.add({ name: "Hermione Granger", house: "Gryffindor", patronus: "Loutre" });
 repo.add({ name: "Luna Lovegood", house: "Ravenclaw", patronus: "Lièvre" });
 
 const gryffindors = repo.findByHouse("Gryffindor");
@@ -42,4 +44,35 @@ console.assert(repo.findByHouse("Hufflepuff").length === 0, "Hufflepuff devrait 
 function maisonInvalide() {
   // @ts-expect-error — "Poudlard" n'est pas une House
   repo.findByHouse("Poudlard");
+}
+
+// Exercice 3 — gestionnaire limité aux lancements de sorts
+const events: AcademyEvent[] = [
+  { type: "enrollment", wizardId: hermione.id, house: "Gryffindor" },
+  { type: "spell-cast", wizardId: harry.id, spell: "Expelliarmus" },
+  { type: "duel", challengerId: harry.id, opponentId: draco.id, winnerId: harry.id },
+  { type: "spell-cast", wizardId: hermione.id, spell: "Wingardium Leviosa" },
+];
+
+const messages: string[] = [];
+for (const event of events) {
+  // Après ce test, TypeScript sait que `event` est un SpellCastEvent
+  if (event.type === "spell-cast") {
+    messages.push(handleSpellCast(event));
+  }
+}
+console.log("Sorts lancés :", messages);
+
+console.assert(messages.length === 2, "Seuls les 2 lancements de sorts devraient être traités");
+console.assert(
+  messages[0] === "Le sorcier #1 lance « Expelliarmus »",
+  "Le premier message devrait concerner Expelliarmus",
+);
+
+// Les autres événements sont refusés à la compilation
+function evenementsInvalides() {
+  // @ts-expect-error — un événement "duel" n'est pas un SpellCastEvent
+  handleSpellCast({ type: "duel", challengerId: 1, opponentId: 2, winnerId: 1 });
+  // @ts-expect-error — un AcademyEvent non vérifié pourrait être n'importe quel événement
+  handleSpellCast(events[0]);
 }
